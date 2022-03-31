@@ -160,4 +160,4 @@ Tto(4)= Tto(3)+ (Cp_turb/Cp_comp)*(Tto(6)-Tto(5));
 
 % index 5 is equalt to hpt inlet
 rhotostag5 = 1000*P(5)/(Rideal*Tto(5))
-rho5to = rhotostag5/(1+(gamma_turb -1)/2  ) ^(); % assuming hpt inlet is choked
+rho5to = rhotostag5/(1+(gamma_turb -1)/2  )  ^(); % assuming hpt inlet is choked
