@@ -141,10 +141,10 @@ Ma2 = Ua2/speedofsound;
 mtotalto = A1* Ua2 * rhoa2; %
 
 %inlet conditions
-Pto(1)= Pa*(1+((gamma_comp-1)/2)*Ma2^2)^(gamma_comp/(gamma_comp-1));
+Pto(1)= Pa2*(1+((gamma_comp-1)/2)*Ma2^2)^(gamma_comp/(gamma_comp-1));
 Tto(1) = Ta2 + (Ua2^2)/(2*Cp_comp);
 
-Rto(2) = 1;
+Rto(2) = 1.305;
 
 %compressor stages: 13, 23, 3
  i = 2;
@@ -162,7 +162,8 @@ Tto(3) =tauBooster*Tto(2);
 Pto(3) = Pto(2)*tauBooster^(gamma_comp*ec/(gamma_comp-1));
 
 Tto(4)= Tto(3)+ (Cp_turb/Cp_comp)*(Tto(5)-Tto(6));
-
+Pto(4) = Pto(3)*(Tto(4)/Tto(3))^(gamma_comp*ec/(gamma_comp-1));
+Pto(5) = Pto(4);
 % index 5 is equalt to hpt inlet
 rhotostag5 = 1000*P(5)/(Rideal*Tto(5)); %stagnation density
 rho5to = rhotostag5/(1+(gamma_turb -1)/2  ) ^(1/(gamma_turb-1)); % assuming hpt inlet is choked finds static rho
@@ -174,4 +175,15 @@ Bto = Mbypassto/Mcoreto;
 
 Tto(7) = Tto(6)-(Cp_comp/Cp_turb)*( (Tto(3)-Tto(2)) + (Bto+1)*(Tto(2)-Tto(1))  )
 
+Pto(6) = Pto(5)*(Tto(6)/Tto(5))^((gamma_turb)/(ec*(gamma_turb-1)));
 
+Pto(7) = Pto(6)*(Tto(7)/Tto(6))^((gamma_turb)/(ec*(gamma_turb-1)))
+
+ Pto(8) = Pa2;
+ Tto(8) = Tto(7)*(Pto(8)/Pto(7))^((gamma_turb-1)/gamma_turb);
+    %Mexitcore = (CoreexitRatio^((gamma_turb-1)/gamma_turb)-1)*(2/(gamma_turb-1));
+    %Uexitcore = Mexitcore*sqrt(gamma_turb*Rideal*T(8))
+% T8static = 
+ Uexitcoretakeoff = sqrt(2 * Cp_turb *  (Tto(7)-Tto(8))   )
+rho8 = Pa2/(Rideal*Tto(8))
+ mcoretakeofftest = Uexitcoretakeoff * rho8*Acore
