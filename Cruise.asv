@@ -119,12 +119,15 @@ end
 
 %rhostatic(7) = rho(7)/( (1+(gamma_turb-1)/2)^(1/(gamma_turb-1))   )
 
+%invlaid needs to be updated for static values
+%Acore= mcore/(rho(8)*Uexitcore);
+%V5 = sqrt(gamma_turb*Rideal*T(5));
+rho5static = rho(5)/(1+(gamma_turb -1)/2  ) ^(1/(gamma_turb-1));
+T5staticto =T(5)/(1+(gamma_turb -1)/2  ); % again assuming ma =1
+c_5 = sqrt(Rideal*T5staticto*gamma_turb);
+A5 = mcore/(rho5static*c_5);
 
-Acore= mcore/(rho(8)*Uexitcore);
-V4 = sqrt(gamma_turb*Rideal*T(5));
-A4 = mcore/(rho(5)*V4);
-
-
+A1 = mtotal/(rhoa*Ua);
 
 %% take-off
 Pa2 = 101.325;
@@ -135,11 +138,13 @@ Ua2 = norm(Vtakeoff);
 speedofsound= sqrt(gamma_comp*Rideal*Ua);
 Ma2 = Ua2/speedofsound;
 
+mtotalto = A1* Ua2 * rhoa2; %
+
 %inlet conditions
 Pto(1)= Pa*(1+((gamma_comp-1)/2)*Ma2^2)^(gamma_comp/(gamma_comp-1));
 Tto(1) = Ta2 + (Ua2^2)/(2*Cp_comp);
 
-Rto(2) = 1.6;
+Rto(2) = 1;
 
 %compressor stages: 13, 23, 3
  i = 2;
@@ -148,16 +153,25 @@ Tto(i) = Tto(i-1)*Rto(i)^((gamma_comp-1)/(gamma_comp*ec));
 
 T4toT2ratio = T(5)/T(1);
 Tto(5) = Tto(1)*T4toT2ratio;
-tauHPT = (T(5)-T(6))/T(5);
+tauHPT = T(6)/ T(5);%(T(5)-T(6))/T(5);
 Tto(6) = tauHPT*Tto(5);
 
 
-tauBooster = (T(3)-T(1))/(T(2)-T(1));
+tauBooster = T(3)/T(2);%(T(3)-T(1))/(T(2)-T(1)); %ahhhhhhhhhhhhhhhhhhhhhhhhhhhhh
 Tto(3) =tauBooster*Tto(2);
 Pto(3) = Pto(2)*tauBooster^(gamma_comp*ec/(gamma_comp-1));
 
-Tto(4)= Tto(3)+ (Cp_turb/Cp_comp)*(Tto(6)-Tto(5));
+Tto(4)= Tto(3)+ (Cp_turb/Cp_comp)*(Tto(5)-Tto(6));
 
 % index 5 is equalt to hpt inlet
-rhotostag5 = 1000*P(5)/(Rideal*Tto(5))
-rho5to = rhotostag5/(1+(gamma_turb -1)/2  )  ^(); % assuming hpt inlet is choked
+rhotostag5 = 1000*P(5)/(Rideal*Tto(5)); %stagnation density
+rho5to = rhotostag5/(1+(gamma_turb -1)/2  ) ^(1/(gamma_turb-1)); % assuming hpt inlet is choked finds static rho
+T5staticto =Tto(5)/(1+(gamma_turb -1)/2  ); % again assuming ma =1
+c_5to = sqrt(Rideal*T5staticto*gamma_turb);
+Mcoreto = A5*c_5to*rho5to; %mc questionable value maybe should be higher
+Mbypassto = mtotalto-Mcoreto;
+Bto = Mbypassto/Mcoreto;
+
+Tto(7) = Tto(6)-(Cp_comp/Cp_turb)*( (Tto(3)-Tto(2)) + (Bto+1)*(Tto(2)-Tto(1))  )
+
+
