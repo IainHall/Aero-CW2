@@ -255,3 +255,12 @@ mcore_to_9 = rho_to_9*U_to_9*A9;
 
 
 diff = mcore_to_9-mcore_to_4
+
+FspecBypass_to = (B_to/(1+B_to))*(U19_to-Ua_to); %+ (B_to/(1+B_to))* ((Rideal*T_to_19)/(1000*P_19*U19) ) * (1000*P_19- 1000*Pa);
+
+FspecCore_to= (1/(1+B))*(U_to_9-Ua) + (1/(1+B))* ((Rideal*T_to_9)/(1000*P_to_9*U_to_9) ) * (1000*P_to_9- 1000*Pa);
+
+Fspec_to = FspecBypass_to+FspecCore_to;
+mtotal_to = mcore_to_9+mbypass_to;
+F_to = Fspec_to*mtotal_to;
+

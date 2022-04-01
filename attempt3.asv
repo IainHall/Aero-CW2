@@ -118,11 +118,11 @@ mcore = (1/(B+1))*mtotal;
 
 
 rho_19 =  1000*P_19/(Rideal*T_19);
-A19 = mbypass /(rho_19*U19);
+A19 =3.853237354805453% mbypass /(rho_19*U19);
 
 
 rho_9 = 1000*P_9/(Rideal*T_9);
-A9 = mcore /(rho_19*U9);
+A9 = 0.856667952539427%mcore /(rho_19*U9);
 
 
 rho_o_4 = 1000*Po_4/(Rideal*To_4);
@@ -136,7 +136,7 @@ A4 = mcore/(rho_4*U4);
 %% take-off
 
 % guess
-R_fan_to = 1.2;
+R_fan_to = 1.409;
 
 %ambient conditions
 Pa_to = 101.325;
@@ -234,7 +234,7 @@ ChokedRatioCore = ((gamma_turb+1)/2)^(gamma_turb/(gamma_turb-1));
 CoreexitRatio_to = Po_to_5/Pa_to;
 
 if CoreexitRatio_to>=ChokedRatioCore
-
+    P_to_9 = Po_to_5/ChokedRatioCore;
     disp('core is choked in take-off')
     % 8 refers to section 9 of the engine
     T_to_9 = To_to_5*(1/ChokedRatioCore)^((gamma_turb-1)/gamma_turb);
@@ -242,7 +242,7 @@ if CoreexitRatio_to>=ChokedRatioCore
     rho_to_9 = 1000*P_to_9/(Rideal*T_to_9);
 else
     disp('core is not choked')
-    P_to_9 = Pa_to;
+    P_to_9 = Pa_to
     T_to_9 = To_to_5*(P_to_9/Po_to_5)^((gamma_turb-1)/gamma_turb);
     %Mexitcore = (CoreexitRatio^((gamma_turb-1)/gamma_turb)-1)*(2/(gamma_turb-1));
     %Uexitcore = Mexitcore*sqrt(gamma_turb*Rideal*T(8))
@@ -255,3 +255,12 @@ mcore_to_9 = rho_to_9*U_to_9*A9;
 
 
 diff = mcore_to_9-mcore_to_4
+
+FspecBypass_to = (B_to/(1+B_to))*(U19_to-Ua_to); %+ (B_to/(1+B_to))* ((Rideal*T_to_19)/(1000*P_19*U19) ) * (1000*P_19- 1000*Pa);
+
+FspecCore_to= (1/(1+B))*(U_to_9-Ua) + (1/(1+B))* ((Rideal*T_to_9)/(1000*P_to_9*U_to_9) ) * (1000*P_to_9- 1000*Pa);
+
+Fspec_to = FspecBypass_to+FspecCore_to;
+mtotal_to = mcore_to_9+mbypass_to;
+F_to = Fspec_to*mtotal_to;
+
