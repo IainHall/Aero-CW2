@@ -1,7 +1,8 @@
 
 
 
-%% attempt 3
+%% Aero Coursework 2 
+%% Written by Iain Hall 01/04/22
 
 
 %%
@@ -262,5 +263,21 @@ FspecCore_to= (1/(1+B))*(U_to_9-Ua) + (1/(1+B))* ((Rideal*T_to_9)/(1000*P_to_9*U
 
 Fspec_to = FspecBypass_to+FspecCore_to;
 mtotal_to = mcore_to_9+mbypass_to;
-F_to = Fspec_to*mtotal_to;
+F_to = Fspec_to*mtotal_to
+
+
+
+%% thrust required for take off
+
+
+theta = asin(3/90);
+mtow = 175e3;
+LD = 10;
+Thrustreq = mtow *9.81* (cos(theta)/LD + sin(theta))
+
+
+
+
+
+
 
