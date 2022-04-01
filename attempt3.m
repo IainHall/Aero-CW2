@@ -78,7 +78,7 @@ if CoreexitRatio>=ChokedRatioCore
     disp('core is choked')
     % 8 refers to section 9 of the engine
     T_9 = T_9*(1/ChokedRatioCore)^((gamma_turb-1)/gamma_turb);
-    U_9 = sqrt(gamma_turb*Rideal*T(8))
+    U_9 = sqrt(gamma_turb*Rideal*T_9)
 else
     disp('core is not choked')
     P_9 = Pa;
@@ -136,7 +136,7 @@ A4 = mcore/(rho_4*U4);
 %% take-off
 
 % guess
-R_fan_to = 1.2;
+R_fan_to = 1.409;
 
 %ambient conditions
 Pa_to = 101.325;
@@ -190,22 +190,68 @@ Po_to_45 = Po_to_4* (To_to_45/To_to_4)^(gamma_comp/((gamma_comp-1)*ec));
 rho_to_o_4 = 1000*Po_to_4/(Rideal*To_to_4);
 rho_to_4 = rho_to_o_4/(1+(gamma_turb -1)/2  ) ^(1/(gamma_turb-1)); % as Ma = 1
 T_to_4 = To_to_4/(1+(gamma_turb -1)/2  );     % as Ma = 1
-U4 = sqrt(gamma_turb*Rideal*T_to_4);
-mcore_to_4 = rho_to_4 * A4 * T_to_4;
+U4_to = sqrt(gamma_turb*Rideal*T_to_4);
+mcore_to_4 = rho_to_4 * A4 * U4_to;
 
 
+% step 3 on form
+
+ChokedRatioBypass = ((gamma_comp+1)/2)^(gamma_comp/(gamma_comp-1));
+BypassexitRatio_to = Po_to_13/Pa_to;
+
+if BypassexitRatio_to>=ChokedRatioBypass
+    P_to_19 = Po_to_13/ChokedRatioBypass;
+    disp('Bypass is choked in take-off')
+    % 8 refers to section 9 of the engine
+    T_to_19= To_to_13*(1/ChokedRatioBypass)^((gamma_comp-1)/gamma_comp);
+    U19_to= sqrt(gamma_comp*Rideal*T_to_19);
+else
+    disp('Bypass is not choked in take-off')
+    P_to_19 = Pa_to;
+
+    T_to_19 = To_to_13*(P_to_19/Po_to_13)^((gamma_turb-1)/gamma_turb);
+    %Mexitcore = (CoreexitRatio^((gamma_turb-1)/gamma_turb)-1)*(2/(gamma_turb-1));
+    %Uexitcore = Mexitcore*sqrt(gamma_turb*Rideal*T(8))
+    U19_to = sqrt(2 * Cp_comp *  (To_to_13-T_to_19  ) );
+
+end
 
 
+rho_to_19 =  1000*P_to_19/(Rideal*T_to_19);
+mbypass_to = rho_to_19*A19*U19_to;
+
+B_to = mbypass_to/mcore_to_4;
+
+% step 4 of guidance
+
+To_to_5 = To_to_45 - (Cp_comp/Cp_turb)*(To_to_23- To_to_13 + (B_to+1)*(To_to_13-To_to_2));
+LPTtempratio_to = To_to_5/To_to_45;
+Po_to_5 = Po_to_45*(LPTtempratio_to)^((gamma_turb)/(ec*(gamma_turb-1)));
+R_lpt_to = Po_to_5/Po_to_45;
 
 
+ChokedRatioCore = ((gamma_turb+1)/2)^(gamma_turb/(gamma_turb-1));
+CoreexitRatio_to = Po_to_5/Pa_to;
+
+if CoreexitRatio_to>=ChokedRatioCore
+    P_to_9 = Po_to_5/ChokedRatioCore;
+    disp('core is choked in take-off')
+    % 8 refers to section 9 of the engine
+    T_to_9 = To_to_5*(1/ChokedRatioCore)^((gamma_turb-1)/gamma_turb);
+    U_to_9 = sqrt(gamma_turb*Rideal*T_to_9)
+    rho_to_9 = 1000*P_to_9/(Rideal*T_to_9);
+else
+    disp('core is not choked')
+    P_to_9 = Pa_to
+    T_to_9 = To_to_5*(P_to_9/Po_to_5)^((gamma_turb-1)/gamma_turb);
+    %Mexitcore = (CoreexitRatio^((gamma_turb-1)/gamma_turb)-1)*(2/(gamma_turb-1));
+    %Uexitcore = Mexitcore*sqrt(gamma_turb*Rideal*T(8))
+    U_to_9 = sqrt(2 * Cp_turb *  (To_to_5-T_to_9  ) )
+    rho_to_9 = 1000*P_to_9/(Rideal*T_to_9);
+
+end
+
+mcore_to_9 = rho_to_9*U_to_9*A9;
 
 
-
-
-
-
-
-
-
-
-
+diff = mcore_to_9-mcore_to_4
